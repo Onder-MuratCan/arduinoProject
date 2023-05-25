@@ -1,0 +1,79 @@
+#include <Servo.h> // include the Servo library
+
+// Ultrasonik Sinyal pinleri
+const int trigPin = 10;
+const int echoPin = 11;
+const int buzzerPin = 8; // piezo buzzer's pin
+
+long duration;
+int distance;
+
+Servo myServo; 
+
+void setup() {
+  pinMode(trigPin, OUTPUT); 
+  pinMode(echoPin, INPUT); 
+  pinMode(buzzerPin, OUTPUT); // set buzzerPin as an output
+  Serial.begin(9600);
+  myServo.attach(12); // Servo motor sinyal pini
+}
+
+void loop() {
+  // 15 derece ile 165 derece arasında dön
+  for(int i=15;i<=165;i++){  
+  myServo.write(i);
+  delay(30);
+  distance = calculateDistance();
+  
+  if (distance < 15) { // if the distance is less than 15 cm
+    // make the buzzer beep loudly
+    tone(buzzerPin, 2000); // 2000 Hz frequency
+    delay(200); // delay for 200 ms
+    noTone(buzzerPin); // stop the buzzer
+  } else if (distance >= 15 && distance < 30) { // if the distance is between 15 cm and 30 cm
+    // make the buzzer beep softly
+    tone(buzzerPin, 1000); // 1000 Hz frequency
+    delay(200); // delay for 200 ms
+    noTone(buzzerPin); // stop the buzzer
+  }
+  
+  Serial.print(i); 
+  Serial.print(","); 
+  Serial.print(distance); 
+  Serial.print("."); 
+  }
+  
+  for(int i=165;i>15;i--){  
+  myServo.write(i);
+  delay(30);
+  distance = calculateDistance();
+  if (distance < 15) { // if the distance is less than 15 cm
+    // make the buzzer beep loudly
+    tone(buzzerPin, 2000); // 2000 Hz frequency
+    delay(200); // delay for 200 ms
+    noTone(buzzerPin); // stop the buzzer
+  } else if (distance >= 15 && distance < 30) { // if the distance is between 15 cm and 30 cm
+    // make the buzzer beep softly
+    tone(buzzerPin, 1000); // 1000 Hz frequency
+    delay(200); // delay for 200 ms
+    noTone(buzzerPin); // stop the buzzer
+  }
+  Serial.print(i);
+  Serial.print(",");
+  Serial.print(distance);
+  Serial.print(".");
+  }
+}
+
+int calculateDistance(){ 
+  
+  digitalWrite(trigPin, LOW); 
+  delayMicroseconds(2);
+
+  digitalWrite(trigPin, HIGH); 
+  delayMicroseconds(10);
+  digitalWrite(trigPin, LOW);
+  duration = pulseIn(echoPin, HIGH); 
+  distance= duration*0.034/2;
+  return distance;
+}
